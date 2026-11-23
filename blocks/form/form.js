@@ -575,8 +575,11 @@ export default async function decorate(block) {
   let formDef;
   let pathname;
   if (container) {
-    ({ pathname } = new URL(container.href));
-    formDef = await fetchForm(container.href);
+    // ponytail: pipeline makes cross-site *.aem.page links relative; link text keeps full URL
+    const text = container.textContent.trim();
+    const href = /^https?:\/\//.test(text) ? text : container.href;
+    ({ pathname } = new URL(href));
+    formDef = await fetchForm(href);
   } else {
     ({ container, formDef } = extractFormDefinition(block));
   }
