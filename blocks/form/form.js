@@ -580,6 +580,10 @@ export default async function decorate(block) {
     const href = /^https?:\/\//.test(text) ? text : container.href;
     ({ pathname } = new URL(href));
     formDef = await fetchForm(href);
+    // AEM publish model JSON has a relative submit action; send it back to that publish host
+    if (formDef?.action && href.endsWith('.model.json') && new URL(href).origin !== window.location.origin) {
+      formDef.action = new URL(formDef.action, href).href;
+    }
   } else {
     ({ container, formDef } = extractFormDefinition(block));
   }
